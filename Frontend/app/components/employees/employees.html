@@ -1,0 +1,22 @@
+<div class="content">
+    <h2>{{ employees.length }} Employees on Payroll</h2>
+            
+    <ul ng-repeat="employee in employees">
+        <li>
+            EID: {{ employee.employee_id }}<br>
+            Name: {{ employee.first_name }} {{ employee.last_name }}<br>
+            Salary: {{ employee.salary }}<br>
+            New Hire: {{ employee.new_hire }}<br>
+        </li>
+    </ul>
+
+    <h3>New Employee</h3>
+        <form ng-submit="addEmployee()">
+            <input type="text" placeholder="id" ng-model="employee.employee_id" />
+            <input type="text" placeholder="first name" ng-model="employee.first_name" />
+            <input type="text" placeholder="last name" ng-model="employee.last_name" />
+            <input type="text" placeholder="salary" ng-model="employee.salary" />
+            <input type="submit" value="Add Employee" />
+        </form>
+
+</div>

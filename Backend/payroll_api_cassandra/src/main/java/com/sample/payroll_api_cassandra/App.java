@@ -5,11 +5,30 @@ import java.util.Scanner;
 import static spark.Spark.*;
 import com.google.gson.Gson;
 
+import spark.Filter;
+import spark.Request;
+import spark.Response;
+
 //API routes
 public class App {
 	
 	//Database object
-	public static Database cassandra = new Database();
+	private static final Database cassandra = new Database();
+	
+	//Payroll API context
+	private static final String payroll_api_context = "/payrollservice/employees";
+	
+	//CORS function
+	private static void enableCORS(final String origin, final String methods, final String headers) {
+	    before(new Filter() {
+	        @Override
+	        public void handle(Request request, Response response) {
+	            response.header("Access-Control-Allow-Origin", origin);
+	            response.header("Access-Control-Request-Method", methods);
+	            response.header("Access-Control-Allow-Headers", headers);
+	        }
+	    });
+	}
 	
 	@SuppressWarnings("resource")
 	public static void main(String[]args) {
@@ -25,26 +44,28 @@ public class App {
 		cassandra.createTable("employees");
 		
 		//Create payroll service using the same database instance parameters
-		PayrollService payrollService = new PayrollService(cassandra.getCluster(),
+		final PayrollService payrollService = new PayrollService(cassandra.getCluster(),
 				cassandra.getSession(),
 				cassandra.getKeyspace(),
 				cassandra.getTable());
 		
+		enableCORS("*", "*", "*");
+		
 		//Add Employee to payroll
-		post("/add-employee", (req, res) -> {
+		post(payroll_api_context + "/", (req, res) -> {
 			Employee newEmployee = gson.fromJson(req.body(), Employee.class);
 			System.out.println(newEmployee);
 			return payrollService.addEmployee(newEmployee);
 		}, gson::toJson);
 		
 		//Get all Employees in database
-		get("/", (req, res) -> {
+		get(payroll_api_context + "/", (req, res) -> {
 			res.type("application/json");
 			return payrollService.getEmployees();
 		}, gson::toJson);
 		
-		//Find Employee by ID
-		get("/:id", (req, res) -> {
+		//Find Employee by ID -> transform to query string later
+		get(payroll_api_context + "/:id", (req, res) -> {
 			res.type("application/json");
 			Employee employee = payrollService.getEmployee(req.params(":id"));
 			System.out.println(employee);
@@ -58,7 +79,7 @@ public class App {
 			
 		}, gson::toJson);
 		
-		delete("/:id", (req, res) -> {
+		delete(payroll_api_context + "/:id", (req, res) -> {
 			res.type("application/json");
 			Employee employee = payrollService.removeFromPayroll(req.params(":id"));
 			
@@ -70,7 +91,7 @@ public class App {
 			
 		}, gson::toJson);
 		
-		put("/:id", (req, res) -> {
+		put(payroll_api_context + "/:id", (req, res) -> {
 			res.type("application/json");
 			Employee updated_employee = gson.fromJson(req.body(), Employee.class);
 			

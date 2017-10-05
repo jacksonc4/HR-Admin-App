@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+
+<html ng-app="HR App">
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.6/angular-route.min.js"></script>
+        <link href="/assets/css/styles.css" rel="stylesheet" type="text/css" />
+        <script src="app.js"></script>
+
+        <title>AngularJS HR Admin App</title>
+    </head>
+    
+    <body>
+        <header ng-include="'/app/shared/components/header.html'"></header>
+        <main ng-view></main>
+
+    </body>
+</html>

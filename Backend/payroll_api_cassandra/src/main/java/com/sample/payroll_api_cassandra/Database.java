@@ -40,7 +40,7 @@ public class Database {
 	
 	public void createKeyspace(String name) {
 		System.out.println("Creating " + name + " keyspace...");
-		this.session.execute("CREATE keyspace " + name + " WITH replication " 
+		this.session.execute("CREATE keyspace IF NOT EXISTS " + name + " WITH replication " 
 				+ "= {'class':'SimpleStrategy', 'replication_factor':3} AND durable_writes = true;");
 			System.out.println("Keyspace created. Now using " + name + " keyspace.");
 		this.session.execute("USE " + name + ";");
@@ -50,7 +50,7 @@ public class Database {
 	
 	public void createTable(String name) {
 		System.out.println("Creating " + name + " table...");
-		this.session.execute("CREATE table " + name + "(employee_id varchar PRIMARY KEY,"
+		this.session.execute("CREATE table IF NOT EXISTS " + name + "(employee_id varchar PRIMARY KEY,"
 				+ "first_name varchar,"
 				+ "last_name varchar,"
 				+ "salary double,"
