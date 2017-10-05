@@ -16,18 +16,24 @@ app.config(['$routeProvider', function ($routeProvider) {
 app.controller('EmployeesController', ['$scope', '$http', function ($scope, $http) {
 
     $scope.employees = [];
+
+    $scope.init = function () {
+
+        $http({
+            method: 'GET',
+            url: 'http://localhost:4567/payrollservice/employees/'
     
-    $http({
-        method: 'GET',
-        url: 'http://localhost:4567/payrollservice/employees/'
+            }).then(function successCallback (response) {
+                $scope.employees = response.data;
+    
+            }, function errorCallback () {
+                console.log('Could not perform GET');
+    
+        });
 
-        }).then(function successCallback (response) {
-            $scope.employees = response.data;
+    }
 
-        }, function errorCallback () {
-            console.log('Could not perform GET');
-
-    });
+    $scope.init();    
 
     $scope.addEmployee = function () {
         
@@ -38,6 +44,7 @@ app.controller('EmployeesController', ['$scope', '$http', function ($scope, $htt
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
 
                 }).then(function successCallback (response) {
+                    $scope.init();
                     console.log('POST successful');
                     console.log(response.data);
         
@@ -51,6 +58,25 @@ app.controller('EmployeesController', ['$scope', '$http', function ($scope, $htt
         $scope.employee.last_name = "";
         $scope.employee.salary = "";
         $scope.employee.new_hire = true;
+
+    };
+
+    $scope.removeEmployee = function (employee) {
+
+        $http({
+            method: 'DELETE',
+            url: 'http://localhost:4567/payrollservice/employees/' + employee.employee_id,
+            data: {}
+
+            }).then(function successCallback (response) {
+                $scope.init();
+                console.log(employee.first_name + ' will be removed from payroll.');
+                console.log(response.data);
+    
+            }, function errorCallback () {
+                console.log('Could not perform DELETE');
+    
+        });
 
     };
 

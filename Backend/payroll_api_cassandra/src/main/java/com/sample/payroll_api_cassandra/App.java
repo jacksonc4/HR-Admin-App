@@ -25,6 +25,7 @@ public class App {
 	        public void handle(Request request, Response response) {
 	            response.header("Access-Control-Allow-Origin", origin);
 	            response.header("Access-Control-Request-Method", methods);
+	            response.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
 	            response.header("Access-Control-Allow-Headers", headers);
 	        }
 	    });
@@ -54,7 +55,6 @@ public class App {
 		//Add Employee to payroll
 		post(payroll_api_context + "/", (req, res) -> {
 			Employee newEmployee = gson.fromJson(req.body(), Employee.class);
-			System.out.println(newEmployee);
 			return payrollService.addEmployee(newEmployee);
 		}, gson::toJson);
 		
@@ -68,7 +68,6 @@ public class App {
 		get(payroll_api_context + "/:id", (req, res) -> {
 			res.type("application/json");
 			Employee employee = payrollService.getEmployee(req.params(":id"));
-			System.out.println(employee);
 			
 			if (employee != null) {
 				return employee;
@@ -76,6 +75,12 @@ public class App {
 			}
 			
 			return "Could not find employee";
+			
+		}, gson::toJson);
+		
+		options(payroll_api_context + "/:id", (req, res) -> {
+			res.status(200);
+			return "Passed through server OPTIONS method.";
 			
 		}, gson::toJson);
 		
@@ -96,7 +101,6 @@ public class App {
 			Employee updated_employee = gson.fromJson(req.body(), Employee.class);
 			
 			if (updated_employee != null) {
-				System.out.println(updated_employee);
 				Employee employee_to_update = payrollService.updateEmployee(req.params(":id"), updated_employee);
 				
 				return employee_to_update.getFirst() + " was updated.";

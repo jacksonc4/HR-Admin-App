@@ -1,12 +1,16 @@
 <div class="content">
-    <h2>{{ employees.length }} Employees on Payroll</h2>
+    <h2>{{ employees.length }} Employees on Payroll</h2></br>
+        <button ng-click="order = 'employee_id'">Order by ID</button>
+        <button ng-click="order = 'salary'">Order by salary</button>
+
+    <input type="text" ng-model="search" placeholder="search for employee" />
             
-    <ul ng-repeat="employee in employees">
+    <ul ng-repeat="employee in employees | orderBy: order | filter: search">
         <li>
-            EID: {{ employee.employee_id }}<br>
-            Name: {{ employee.first_name }} {{ employee.last_name }}<br>
-            Salary: {{ employee.salary }}<br>
-            New Hire: {{ employee.new_hire }}<br>
+            <div class="remove" ng-click="removeEmployee(employee)">x</div>
+                EID: {{ employee.employee_id }}<br>
+                Name: {{ employee.first_name }} {{ employee.last_name }}<br>
+                Salary: {{ employee.salary | currency: '$' }}<br>
         </li>
     </ul>
 
