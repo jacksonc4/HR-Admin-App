@@ -1,15 +1,5 @@
 package com.sample.payroll_api_cassandra;
 
-import java.util.Scanner;
-
-import static spark.Spark.*;
-import com.google.gson.Gson;
-
-import spark.Filter;
-import spark.Request;
-import spark.Response;
-
-//API routes
 public class App {
 	
 	//Database object
@@ -18,109 +8,33 @@ public class App {
 	//Payroll API context
 	private static final String payroll_api_context = "/payrollservice/employees";
 	
-	//CORS function
-	private static void enableCORS(final String origin, final String methods, final String headers) {
-	    before(new Filter() {
-	        @Override
-	        public void handle(Request request, Response response) {
-	            response.header("Access-Control-Allow-Origin", origin);
-	            response.header("Access-Control-Request-Method", methods);
-	            response.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-	            response.header("Access-Control-Allow-Headers", headers);
-	        }
-	    });
-	}
+	//CORS object
+	private static final CORS cors = new CORS();
 	
-	@SuppressWarnings("resource")
+	//Employee Routes object
+	private static final EmployeeRoutes employeeRoutes = new EmployeeRoutes();
+	
 	public static void main(String[]args) {
-		final Gson gson = new Gson();
-		Scanner in = new Scanner(System.in);
 		
 		System.out.print("Cluster name / Contact point IP: ");
 			String name = "Payroll API";
 			String contact_point = "127.0.0.1";
 		
+		//Build Database
 		cassandra.buildCluster(name, contact_point);
 		cassandra.createKeyspace("payroll_api");
 		cassandra.createTable("employees");
 		
 		//Create payroll service using the same database instance parameters
-		final PayrollService payrollService = new PayrollService(cassandra.getCluster(),
-				cassandra.getSession(),
+		final PayrollService payrollService = new PayrollService(cassandra.getSession(),
 				cassandra.getKeyspace(),
 				cassandra.getTable());
 		
-		enableCORS("*", "*", "*");
+		//Set up routes for Employee API
+		employeeRoutes.setUpRoutes(payroll_api_context, payrollService);
 		
-		//Add Employee to payroll
-		post(payroll_api_context + "/", (req, res) -> {
-			Employee newEmployee = gson.fromJson(req.body(), Employee.class);
-			return payrollService.addEmployee(newEmployee);
-		}, gson::toJson);
-		
-		//Get all Employees in database
-		get(payroll_api_context + "/", (req, res) -> {
-			res.type("application/json");
-			return payrollService.getEmployees();
-		}, gson::toJson);
-		
-		//Find Employee by ID -> transform to query string later
-		get(payroll_api_context + "/:id", (req, res) -> {
-			res.type("application/json");
-			Employee employee = payrollService.getEmployee(req.params(":id"));
-			
-			if (employee != null) {
-				return employee;
-				
-			}
-			
-			return "Could not find employee";
-			
-		}, gson::toJson);
-		
-		options(payroll_api_context + "/:id", (req, res) -> {
-			res.status(200);
-			return "Passed through server OPTIONS method.";
-			
-		}, gson::toJson);
-		
-		delete(payroll_api_context + "/:id", (req, res) -> {
-			res.type("application/json");
-			Employee employee = payrollService.removeFromPayroll(req.params(":id"));
-			
-			if (employee != null) {
-				return employee.getFirst() + " was removed from payroll.";
-			}
-			
-			return null;
-			
-		}, gson::toJson);
-		
-		put(payroll_api_context + "/:id", (req, res) -> {
-			res.type("application/json");
-			Employee updated_employee = gson.fromJson(req.body(), Employee.class);
-			
-			if (updated_employee != null) {
-				Employee employee_to_update = payrollService.updateEmployee(req.params(":id"), updated_employee);
-				
-				return employee_to_update.getFirst() + " was updated.";
-				
-			}
-			
-			return null;
-			
-		}, gson::toJson);
-		
-		//Delete keyspace when done
-		System.out.print("Delete keyspace? (y/n) ");
-			String drop = in.nextLine();
-				if (drop.equalsIgnoreCase("y")) {
-					cassandra.dropKeyspace();
-				} else {
-					System.out.println("Did nothing.");
-				}
-						
-		in.close();
+		//Enable CORS requests
+		cors.enableCORS("*", "*", "*");
 		
 	}
     

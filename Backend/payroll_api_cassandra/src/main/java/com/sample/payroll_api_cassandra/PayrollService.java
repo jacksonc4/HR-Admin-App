@@ -3,20 +3,17 @@ package com.sample.payroll_api_cassandra;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.datastax.driver.core.Cluster;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
 
 //Service functions
 public class PayrollService {
-	private Cluster cluster;
 	private Session session;
 	private String keyspace;
 	private String table;
 	
-	public PayrollService(Cluster cluster, Session session, String keyspace, String table) {
-		this.cluster = cluster;
+	public PayrollService(Session session, String keyspace, String table) {
 		this.session = session;
 		this.keyspace = keyspace;
 		this.table = table;
