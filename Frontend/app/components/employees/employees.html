@@ -7,10 +7,12 @@
             
     <ul ng-repeat="employee in employees | orderBy: order | filter: search">
         <li>
-            <div class="remove" ng-click="removeEmployee(employee)">x</div>
+            <div class="remove" ng-click="removeEmployee(employee)">Remove</div>
+            <div class="edit" ng-click="editEmployee(employee)">Edit</div>
                 EID: {{ employee.employee_id }}<br>
                 Name: {{ employee.first_name }} {{ employee.last_name }}<br>
                 Salary: {{ employee.salary | currency: '$' }}<br>
+                Hire Date: {{ employee.hire_date }}<br>
         </li>
     </ul>
 
@@ -20,6 +22,7 @@
             <input type="text" placeholder="first name" ng-model="employee.first_name" />
             <input type="text" placeholder="last name" ng-model="employee.last_name" />
             <input type="text" placeholder="salary" ng-model="employee.salary" />
+            <input type="text" placeholder="hire date (mm/dd/yyyy)" ng-model="employee.hire_date" />
             <input type="submit" value="Add Employee" />
         </form>
 

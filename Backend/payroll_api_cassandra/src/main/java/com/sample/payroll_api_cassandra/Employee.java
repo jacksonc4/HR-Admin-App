@@ -5,18 +5,18 @@ public class Employee {
 	private String first_name;
 	private String last_name;
 	private Double salary;
-	private Boolean new_hire;
+	private String hire_date;
 			
 	public Employee() {
 		
 	}
 	
-	public Employee(String employee_id, String first_name, String last_name, Double salary, Boolean new_hire) {
+	public Employee(String employee_id, String first_name, String last_name, Double salary, String hire_date) {
 		this.employee_id = employee_id;
 		this.first_name = first_name;
 		this.last_name = last_name;
 		this.salary = salary;
-		this.new_hire = new_hire;
+		this.hire_date = hire_date;
 	}
 		
 	public String getID() {
@@ -35,8 +35,8 @@ public class Employee {
 		return salary;
 	}
 			
-	public Boolean getHireStatus() {
-		return new_hire;
+	public String getHireDate() {
+		return hire_date;
 	}
 		
 	public void setID(String id) {
@@ -55,12 +55,12 @@ public class Employee {
 		this.salary = salary;
 	}
 			
-	public void setHireStatus(Boolean newHire) {
-		this.new_hire = newHire;
+	public void setHireDate(String hire_date) {
+		this.hire_date = hire_date;
 	}
 			
 	public String toString() {
-		return "Employee ID: " + employee_id + "\nName: " + first_name + " " + last_name + "\nSalary: $" + salary + "\nIs New Hire: " + new_hire + "\n";
+		return "Employee ID: " + employee_id + "\nName: " + first_name + " " + last_name + "\nSalary: $" + salary + "\nHire Date: " + hire_date + "\n";
 	}
 
 }

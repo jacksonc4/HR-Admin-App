@@ -54,7 +54,7 @@ public class Database {
 				+ "first_name varchar,"
 				+ "last_name varchar,"
 				+ "salary double,"
-				+ "new_hire boolean);");
+				+ "hire_date varchar);");
 			System.out.println(name + " table was created in keyspace " + this.keyspace + ".");
 		this.table = name;
 	}
